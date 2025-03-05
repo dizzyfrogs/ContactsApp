@@ -10,6 +10,10 @@ def get_contacts():
 
 @app.route("/create_contact", methods = ["POST"])
 def create_contact():
+
+    if request.json == None:
+        return jsonify({"message":"Missing JSON"}), 400
+    
     first_name = request.json.get("firstName");
     last_name = request.json.get("lastName")
     email = request.json.get("email")
@@ -26,7 +30,23 @@ def create_contact():
 
     return jsonify({"message": "User created!"}), 201
 
+@app.route("/update_contact/<int:user_id>", methods = ["PATCH"])
+def update_contact(user_id):
+    contact = Contact.query.get(user_id)
+    if not contact:
+        return jsonify({"message":"User not found"}), 404
+    
+    data = request.json
+    contact.first_name = data.get("firstName", contact.first_name)
+    contact.last_name = data.get("lastName", contact.last_name)
+    contact.email = data.get("email", contact.email)
+
+    db.session.commit()
+    
+    return jsonify({"message":"User updated!"}), 201
+
 if __name__ == "__main__":
+
     with app.app_context():
         db.create_all()
 
