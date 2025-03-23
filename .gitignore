@@ -1,2 +1,5 @@
-/backend/__pycache__
-backend/instance/mydatabase.db
+backend/__pycache__/
+backend/instance/
+
+.vscode/
+
