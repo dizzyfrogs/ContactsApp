@@ -1,6 +1,7 @@
-from flask import request, jsonify
+from flask import request, jsonify, send_from_directory
 from config import app, db
 from models import Contact
+import os
 
 # GET ALL CONTACTS
 @app.route("/api/contacts", methods = ["GET"])
@@ -78,8 +79,21 @@ def delete_contact(user_id):
     
     return jsonify({"message": "User deleted!"}), 201
 
-if __name__ == "__main__":
 
+frontend_folder = os.path.join(os.getcwd(), "..","frontend")
+dist_folder = os.path.join(frontend_folder,"dist")
+
+# Server static files from the "dist" folder
+
+@app.route("/",defaults={"filename":""})
+@app.route("/<path:filename>")
+def index(filename):
+    if not filename:
+        filename = "index.html"
+    return send_from_directory(dist_folder, filename)
+
+if __name__ == "__main__":
+    
     with app.app_context():
         db.create_all()
 
